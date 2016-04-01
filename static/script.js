@@ -398,7 +398,7 @@ function makeInvestmentSlider() {
 	var brush = d3.svg.brush()
 	    .x(x)
 	    .extent([0, 0])
-	    .on("brush", brushed);
+	    .on("brushend", brushended);
 
 	var svg_investment = d3.select(".slider").append("svg")
 	    .attr("width", width + margin.left + margin.right)
@@ -439,18 +439,19 @@ function makeInvestmentSlider() {
 	    .call(brush.event)
 	  .transition() // gratuitous intro!
 	    .duration(750)
-	    .call(brush.extent([70, 70]))
+	    .call(brush.extent([10, 10]))
 	    .call(brush.event);
 
-	function brushed() {
-	  var value = brush.extent()[0];
+	function brushended() {
+	  var value0 = brush.extent()[0];
 
 	  if (d3.event.sourceEvent) { // not a programmatic event
-	    value = x.invert(d3.mouse(this)[0]);
-	    brush.extent([value, value]);
+	    value0 = Math.round(x.invert(d3.mouse(this)[0]));
+	    brush.extent([value0, value0]);
 	  }
 
-	  handle.attr("cx", x(value));
+	  handle.attr("cx", x(value0));
+		console.log(value0);
 //	  d3.select("body").style("background-color", d3.hsl(value, .8, .8));
 	}
 
@@ -523,6 +524,7 @@ function toggleMap(){
 		if (map.tap) map.tap.disable();
 		document.getElementById('map').style.cursor='default';
 
+		$(".investment").fadeIn();
 		$("div.slider").css({"height": "200px"});
 		$(".leaflet-control-container").fadeOut();
 
@@ -542,6 +544,7 @@ function toggleMap(){
 		if (map.tap) map.tap.enable();
 		document.getElementById('map').style.cursor='grab';
 
+		$(".investment").fadeOut();
 		$("div.slider").css({"height": "180px"});
 		$(".leaflet-control-container").fadeIn();
 
