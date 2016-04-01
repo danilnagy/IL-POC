@@ -411,6 +411,7 @@ function toggleSemantic(){
 				toggleMap();
 			}
 			if ($("#option3").css("display") == "none"){
+				getData();
 				updateData();
 				makeSlider();
 			}
