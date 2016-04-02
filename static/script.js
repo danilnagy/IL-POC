@@ -454,7 +454,7 @@ function makeInvestmentSlider() {
 		console.log(value0);
 //	  d3.select("body").style("background-color", d3.hsl(value, .8, .8));
 	}
-
+	$(".investment").hide();
 	}
 
 	//adjusts markers by slider
