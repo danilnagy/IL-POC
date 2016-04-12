@@ -114,6 +114,7 @@ function makeSlider(){
 	var svg_slider = div_slider
 		// .classed("svg-container", true)
 		.append("svg")
+		.attr("id", "chart")
 		// .attr("preserveAspectRatio", "xMinYMin meet")
 		// .attr("preserveAspectRatio", "none")
 		// .attr("viewBox", "0 0 " + width + " " + height)
@@ -223,7 +224,7 @@ function makeSlider(){
 		.attr("height", height);
 
 
-	d3.select(window).on('resize', resize); 
+	d3.select(window).on('resize', resize);
 	resize();
 
 	function resize(){
@@ -294,6 +295,7 @@ if (semanticActive == false){
 
 	getData();
 	makeSlider();
+	makeInvestmentSlider();
 
 }
 
@@ -386,11 +388,83 @@ function updateMarkers(duration){
 	}
 }
 
-//adjusts markers by slider
-function updateMarkersBySlider(weeks){
-	// document.querySelector('#weekSelected').value = week
-	weekIndex = weeks
-	updateMarkers();
+function makeInvestmentSlider() {
+	var margin = {top: 2, right: 10, bottom: 2, left: 10},
+    width = $('.slider').width() - (margin.left + margin.right),
+    height = 20 - (margin.bottom + margin.top);
+
+	var x = d3.scale.linear()
+	    .domain([0, 19])
+	    .range([0, width])
+	    .clamp(true);
+
+	var brush = d3.svg.brush()
+	    .x(x)
+	    .extent([0, 0])
+	    .on("brushend", brushended);
+
+	var svg_investment = d3.select(".slider").append("svg")
+	    .attr("width", width + margin.left + margin.right)
+	    .attr("height", height + margin.top + margin.bottom)
+			.attr("class", "investment")
+		  .append("g")
+		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	svg_investment.append("g")
+	    .attr("class", "investment x axis")
+	    .attr("transform", "translate(0," + height / 2 + ")")
+	    .call(d3.svg.axis()
+	      .scale(x)
+	      .orient("bottom")
+	      .tickFormat(function(d) { return d + "°"; })
+	      .tickSize(0)
+	      .tickPadding(12))
+	  .select(".domain")
+	  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+	    .attr("class", "halo");
+
+	var investmentSlider = svg_investment.append("g")
+	    .attr("class", "investment slider")
+	    .call(brush);
+
+	investmentSlider.selectAll(".extent,.resize")
+	    .remove();
+
+	investmentSlider.select(".background")
+	    .attr("height", height);
+
+	var handle = investmentSlider.append("circle")
+	    .attr("class", "handle")
+	    .attr("transform", "translate(0," + height / 2 + ")")
+	    .attr("r", 9);
+
+	investmentSlider
+	    .call(brush.event)
+	  .transition() // gratuitous intro!
+	    .duration(750)
+	    .call(brush.extent([10, 10]))
+	    .call(brush.event);
+
+	function brushended() {
+	  var value0 = brush.extent()[0];
+
+	  if (d3.event.sourceEvent) { // not a programmatic event
+	    value0 = Math.round(x.invert(d3.mouse(this)[0]));
+	    brush.extent([value0, value0]);
+	  }
+
+	  handle.attr("cx", x(value0));
+		console.log(value0);
+//	  d3.select("body").style("background-color", d3.hsl(value, .8, .8));
+	}
+	$(".investment").hide();
+	}
+
+	//adjusts markers by slider
+	function updateMarkersBySlider(weeks){
+		// document.querySelector('#weekSelected').value = week
+		weekIndex = weeks
+		updateMarkers();
 };
 
 //adjusts visibility of semantic interface
@@ -454,6 +528,8 @@ function toggleMap(){
 		if (map.tap) map.tap.disable();
 		document.getElementById('map').style.cursor='default';
 
+		$(".investment").fadeIn();
+		$("div.slider").css({"height": "200px"});
 		$(".leaflet-control-container").fadeOut();
 
 		updatePrediction();
@@ -472,15 +548,14 @@ function toggleMap(){
 		if (map.tap) map.tap.enable();
 		document.getElementById('map').style.cursor='grab';
 
+		$(".investment").fadeOut();
+		$("div.slider").css({"height": "180px"});
 		$(".leaflet-control-container").fadeIn();
 
 		updateData();
 
 	}
 }
-
-
-
 
 
 function projectPoint(lat, lng) {
@@ -562,7 +637,7 @@ function updateData(){
 		g.selectAll("rect").data(data.features);
 
 		updateMarkers(duration = 1000);
-		
+
 		repositionSVG();
 
 	});
@@ -621,7 +696,6 @@ function checkKeys(e) {
 
 
 //semantic UI autocomplete
-
 var substringMatcher = function(strs) {
   return function findMatches(q, cb) {
 	var matches, substringRegex;
