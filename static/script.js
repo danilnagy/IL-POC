@@ -94,7 +94,7 @@ function makeSlider(){
 
 	var div_slider = d3.select(".slider");
 
-	var margin = {top: 10, right: 0, bottom: 20, left: 10};
+	var margin = {top: 0, right: 0, bottom: 30, left: 0};
 
 	var width = $('.slider').width()-(margin.left+margin.right);
 	var height = $('.slider').height()-(margin.top+margin.bottom);
@@ -165,7 +165,7 @@ function makeSlider(){
 			};
 		}));
 
-		y.domain([0, 30]);
+		y.domain([0, 35]);
 
 		var areaGraph = g_slider.selectAll(".areaGraph")
 			.data(areaGraphs)
@@ -286,7 +286,7 @@ function brushended() {
 	updateMarkersBySlider(extent2);
 }
 
-var semanticActive = true; //toggle to active semantic UI walkthrough
+var semanticActive = false; //toggle to active semantic UI walkthrough
 
 if (semanticActive == false){
 	$(".desktop").css('display', 'inline');
@@ -476,26 +476,26 @@ function toggleSemantic(){
 		// console.log(option1, option2, option3)
 
 		// toggle for real scenario
-		if (option1 == "business popularity" && option2 == "Dashilar") {
-			$(".desktop").css('display', 'inline');
-			$(".semantic").fadeOut();
-			semanticVisible = false;
+		// if (option1 == "business popularity" && option2 == "Dashilar") {
+		// 	$(".desktop").css('display', 'inline');
+		// 	$(".semantic").fadeOut();
+		// 	semanticVisible = false;
 
-			if (option3 == "investment in BJDW") {
-				toggleMap();
-			}
-			if ($("#option3").css("display") == "none"){
-				getData();
-				updateData();
-				makeSlider();
-			}
-		}
+		// 	if (option3 == "investment in BJDW") {
+		// 		toggleMap();
+		// 	}
+		// 	if ($("#option3").css("display") == "none"){
+		// 		getData();
+		// 		updateData();
+		// 		makeSlider();
+		// 	}
+		// }
 
 		// toggle for development
-		// $(".desktop").css('display', 'inline');
-		// $(".semantic").fadeOut();
-		// semanticVisible = false;
-		// toggleMap();
+		$(".desktop").css('display', 'inline');
+		$(".semantic").fadeOut();
+		semanticVisible = false;
+		toggleMap();
 
 
 	} else {
