@@ -94,7 +94,7 @@ function makeSlider(){
 
 	var div_slider = d3.select(".slider");
 
-	var margin = {top: 10, right: 0, bottom: 20, left: 10};
+	var margin = {top: 0, right: 10, bottom: 20, left: 10};
 
 	var width = $('.slider').width()-(margin.left+margin.right);
 	var height = $('.slider').height()-(margin.top+margin.bottom);
@@ -137,7 +137,8 @@ function makeSlider(){
 	;
 
 	var stack = d3.layout.stack()
-		.values(function(d) { return d.values; });
+		.values(function(d) { return d.values; })
+		.order("inside-out");
 
 	var line = d3.svg.line()
 			.interpolate("monotone")
@@ -162,6 +163,7 @@ function makeSlider(){
 					return {date: d.date, y: +d[name]};
 				})
 			};
+
 		}));
 
 		y.domain([0, 30]);
@@ -223,7 +225,7 @@ function makeSlider(){
 		.attr("height", height);
 
 
-	d3.select(window).on('resize', resize); 
+	d3.select(window).on('resize', resize);
 	resize();
 
 	function resize(){
@@ -246,7 +248,15 @@ function makeSlider(){
 			.scale(x)
 			.orient("bottom")
 			.ticks(d3.time.months)
-			.tickFormat(d3.time.format("%b"))
+			//.tickFormat(d3.time.format("%b"))
+			.tickFormat(function(d){
+				var yearAndMonth = d3.time.format("%B %Y");
+				var MonthOnly = d3.time.format("%b");
+				if (d == parseDate('01-01-2015')){
+					return yearAndMonth(d)}
+				else {
+					return MonthOnly(d)}
+				})
 			.tickPadding(0)
 		);
 
@@ -262,7 +272,6 @@ function makeSlider(){
 			.attr("d", function(d) { return area(d.values); })
 		;
 	}
-
 }
 
 function brushended() {
@@ -285,7 +294,7 @@ function brushended() {
 	updateMarkersBySlider(extent2);
 }
 
-var semanticActive = true; //toggle to active semantic UI walkthrough
+var semanticActive = false; //toggle to active semantic UI walkthrough
 
 if (semanticActive == false){
 	$(".desktop").css('display', 'inline');
@@ -562,7 +571,7 @@ function updateData(){
 		g.selectAll("rect").data(data.features);
 
 		updateMarkers(duration = 1000);
-		
+
 		repositionSVG();
 
 	});
