@@ -94,7 +94,7 @@ function makeSlider(){
 
 	var div_slider = d3.select(".slider");
 
-	var margin = {top: 0, right: 10, bottom: 20, left: 10};
+	var margin = {top: 20, right: 10, bottom: 30, left: 10};
 	var width = parseInt($('.slider').width()-(margin.left+margin.right));
 	var height = parseInt($('.slider').height()-(margin.top+margin.bottom));
 
@@ -107,7 +107,7 @@ function makeSlider(){
 
 	brush = d3.svg.brush()
 		.x(x)
-		.extent([parseDate('01-01-2015'),parseDate('01-07-2015')])
+		.extent([parseDate('01-01-2015'),parseDate('01-01-2015')])
 		.on("brushend", brushended);
 
 	var svg_slider = div_slider
@@ -121,6 +121,18 @@ function makeSlider(){
 		.attr("width", width+margin.left+margin.right)
 		// .classed("svg-content-responsive", true)
 		;
+
+	var pull_rect = svg_slider.append("rect")
+		.attr("width", width+margin.left+margin.right)
+		.attr("height", 15)
+		.style("fill", "#777")
+		.on("click", function(){console.log("WEEEEEE")});
+
+	var pull_text = svg_slider.append("text")
+		.text("PULL FOR INSIGHT")
+		.style("text-anchor", "middle")
+		.attr("transform", "translate(" + (width+margin.left+margin.right)/2 + "," + 12 + ")")
+		.style("fill", "#fff");
 
 	var g_slider = svg_slider
 		.append("g")
@@ -167,14 +179,13 @@ function makeSlider(){
 
 		y.domain([0, 35]);
 
-			var slider_rec = g_slider.append("rect")
-				.attr("class", "grid-background")
-				.attr("height", height);
+		var slider_rec = g_slider.append("rect")
+			.attr("class", "grid-background")
+			.attr("height", height);
 
-			var slider_grid = g_slider.append("g")
-				.attr("class", "x grid")
-				.attr("transform", "translate(0," + height + ")")
-			;
+		var slider_grid = g_slider.append("g")
+			.attr("class", "x grid")
+			.attr("transform", "translate(0," + height + ")");
 
 		var areaGraph = g_slider.selectAll(".areaGraph")
 			.data(areaGraphs)
@@ -196,84 +207,83 @@ function makeSlider(){
  			.attr("d", function(d) { return line(d.values); })
 			.style("stroke", function(d) { return colors.Spectral[7][d.name]; });
 
-
-
-	var slider_axis = g_slider.append("g")
-		.attr("class", "x axis")
-		.on("click", function(){
-			svg_slider.select(".brush")
-				.transition()
-				.call(brush.extent([parseDate('01-01-2015'), parseDate('12-30-2015')]));
-				extent2 = [0,52];
-				updateMarkersBySlider(extent2);
-			})
-		.attr("transform", "translate(0," + height + ")")
-
-
-	slider_axis.selectAll("text")
-		.attr("x", 6)
-		.style("text-anchor", "end");
-
-	var gBrush = g_slider.append("g")
-		.attr("class", "brush")
-		.call(brush)
-		.call(brush.event)
-	;
-
-	gBrush.selectAll("rect")
-		.attr("height", height);
-
-	d3.select(window).on('resize', resize);
-	resize();
-
-	function resize(){
-		width = $('.slider').width()-(margin.left+margin.right);
-		svg_slider.attr("width", width+margin.left+margin.right);
-
-		x.range([0, width]);
-
-		slider_rec.attr("width", width);
-
-		slider_grid.call(d3.svg.axis()
-			.scale(x)
-			.orient("bottom")
-			.ticks(d3.time.thursday)
-			.tickSize(-height)
-			.tickFormat("")
-		);
-
-		slider_axis.call(d3.svg.axis()
-			.scale(x)
-			.orient("bottom")
-			.ticks(d3.time.months)
-			//.tickFormat(d3.time.format("%b"))
-			.tickFormat(function(d){
-				var yearAndMonth = d3.time.format("%b %Y");
-				var MonthOnly = d3.time.format("%b");
-				if (d <= parseDate('01-31-2015')){
-					return yearAndMonth(d)}
-				else {
-					return MonthOnly(d)}
+		var slider_axis = g_slider.append("g")
+			.attr("class", "x axis")
+			.on("click", function(){
+				svg_slider.select(".brush")
+					.transition()
+					.call(brush.extent([parseDate('01-01-2015'), parseDate('12-30-2015')]));
+					extent2 = [0,52];
+					updateMarkersBySlider(extent2);
 				})
-			.tickPadding(0)
-		);
+			.attr("transform", "translate(0," + height + ")")
 
 		slider_axis.selectAll("text")
 			.attr("x", 6)
-			.style("text-anchor", "start");
+			.style("text-anchor", "end");
 
-		gBrush.call(brush)
-			.call(brush.event)
-		;
+		var gBrush = g_slider.append("g")
+			.attr("class", "brush")
+			.call(brush)
+			.call(brush.event);
 
-		g_slider.selectAll(".area")
-			.attr("d", function(d) { return area(d.values); })
-		;
+		gBrush.selectAll("rect")
+			.attr("height", height);
 
-		g_slider.selectAll(".line")
-			.attr("d", function(d) { return area(d.values); })
-		;
-	}		});
+		d3.select(window).on('resize', resize);
+		resize();
+
+		function resize(){
+			width = $('.slider').width()-(margin.left+margin.right);
+
+			svg_slider.attr("width", width+margin.left+margin.right);
+
+			pull_rect.attr("width", width+margin.left+margin.right);
+			pull_text.attr("transform", "translate(" + (width+margin.left+margin.right)/2 + "," + 12 + ")");
+
+			x.range([0, width]);
+
+			slider_rec.attr("width", width);
+
+			slider_grid.call(d3.svg.axis()
+				.scale(x)
+				.orient("bottom")
+				.ticks(d3.time.thursday)
+				.tickSize(-height)
+				.tickFormat("")
+			);
+
+			slider_axis.call(d3.svg.axis()
+				.scale(x)
+				.orient("bottom")
+				.ticks(d3.time.months)
+				//.tickFormat(d3.time.format("%b"))
+				.tickFormat(function(d){
+					var yearAndMonth = d3.time.format("%b %Y");
+					var MonthOnly = d3.time.format("%b");
+					if (d <= parseDate('01-31-2015')){
+						return yearAndMonth(d)}
+					else {
+						return MonthOnly(d)}
+					})
+				.tickPadding(-12)
+				.tickSize(18)
+			);
+
+			slider_axis.selectAll("text")
+				.attr("x", 6)
+				.style("text-anchor", "start");
+
+			gBrush.call(brush)
+				.call(brush.event);
+
+			g_slider.selectAll(".area")
+				.attr("d", function(d) { return area(d.values); });
+
+			g_slider.selectAll(".line")
+				.attr("d", function(d) { return area(d.values); });
+		}
+	});
 }
 
 function brushended() {
