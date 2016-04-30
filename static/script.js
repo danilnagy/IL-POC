@@ -212,7 +212,7 @@ function makeSlider(){
 
 	slider_axis.selectAll("text")
 		.attr("x", 6)
-		.style("text-anchor", null);
+		.style("text-anchor", "end");
 
 	var gBrush = g_slider.append("g")
 		.attr("class", "brush")
@@ -248,15 +248,19 @@ function makeSlider(){
 			.ticks(d3.time.months)
 			//.tickFormat(d3.time.format("%b"))
 			.tickFormat(function(d){
-				var yearAndMonth = d3.time.format("%B %Y");
+				var yearAndMonth = d3.time.format("%b %Y");
 				var MonthOnly = d3.time.format("%b");
-				if (d == parseDate('01-01-2015')){
+				if (d <= parseDate('01-31-2015')){
 					return yearAndMonth(d)}
 				else {
 					return MonthOnly(d)}
 				})
 			.tickPadding(0)
 		);
+
+		slider_axis.selectAll("text")
+			.attr("x", 6)
+			.style("text-anchor", "start");
 
 		gBrush.call(brush)
 			.call(brush.event)
