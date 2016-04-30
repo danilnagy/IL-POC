@@ -95,9 +95,8 @@ function makeSlider(){
 	var div_slider = d3.select(".slider");
 
 	var margin = {top: 0, right: 10, bottom: 20, left: 10};
-
-	var width = $('.slider').width()-(margin.left+margin.right);
-	var height = $('.slider').height()-(margin.top+margin.bottom);
+	var width = parseInt($('.slider').width()-(margin.left+margin.right));
+	var height = parseInt($('.slider').height()-(margin.top+margin.bottom));
 
 	var x = d3.time.scale()
 	    .domain([parseDate('01-01-2015'), parseDate('12-31-2015')])
@@ -118,7 +117,8 @@ function makeSlider(){
 		// .attr("preserveAspectRatio", "none")
 		// .attr("viewBox", "0 0 " + width + " " + height)
 		// .attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
+		.attr("height", height+margin.top+margin.bottom)
+		.attr("width", width+margin.left+margin.right)
 		// .classed("svg-content-responsive", true)
 		;
 
@@ -163,10 +163,18 @@ function makeSlider(){
 					return {date: d.date, y: +d[name]};
 				})
 			};
-
 		}));
 
-		y.domain([0, 30]);
+		y.domain([0, 35]);
+
+			var slider_rec = g_slider.append("rect")
+				.attr("class", "grid-background")
+				.attr("height", height);
+
+			var slider_grid = g_slider.append("g")
+				.attr("class", "x grid")
+				.attr("transform", "translate(0," + height + ")")
+			;
 
 		var areaGraph = g_slider.selectAll(".areaGraph")
 			.data(areaGraphs)
@@ -187,17 +195,8 @@ function makeSlider(){
 			.attr("class", "line")
  			.attr("d", function(d) { return line(d.values); })
 			.style("stroke", function(d) { return colors.Spectral[7][d.name]; });
-	});
 
 
-	var slider_rec = g_slider.append("rect")
-		.attr("class", "grid-background")
-		.attr("height", height);
-
-	var slider_grid = g_slider.append("g")
-		.attr("class", "x grid")
-		.attr("transform", "translate(0," + height + ")")
-	;
 
 	var slider_axis = g_slider.append("g")
 		.attr("class", "x axis")
@@ -209,7 +208,7 @@ function makeSlider(){
 				updateMarkersBySlider(extent2);
 			})
 		.attr("transform", "translate(0," + height + ")")
-	;
+
 
 	slider_axis.selectAll("text")
 		.attr("x", 6)
@@ -224,13 +223,12 @@ function makeSlider(){
 	gBrush.selectAll("rect")
 		.attr("height", height);
 
-
 	d3.select(window).on('resize', resize);
 	resize();
 
 	function resize(){
 		width = $('.slider').width()-(margin.left+margin.right);
-		svg_slider.attr("width", width);
+		svg_slider.attr("width", width+margin.left+margin.right);
 
 		x.range([0, width]);
 
@@ -271,7 +269,7 @@ function makeSlider(){
 		g_slider.selectAll(".line")
 			.attr("d", function(d) { return area(d.values); })
 		;
-	}
+	}		});
 }
 
 function brushended() {
