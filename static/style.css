@@ -134,6 +134,10 @@ em{
 	stroke-opacity: 1;
 }
 
+.pull{
+	cursor: crosshair;
+}
+
 head.tt-dropdown-menu {
      display: none !important;
 }

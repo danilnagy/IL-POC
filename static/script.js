@@ -94,7 +94,7 @@ function makeSlider(){
 
 	var div_slider = d3.select(".slider");
 
-	var margin = {top: 20, right: 10, bottom: 30, left: 10};
+	var margin = {top: 30, right: 10, bottom: 30, left: 10};
 	var width = parseInt($('.slider').width()-(margin.left+margin.right));
 	var height = parseInt($('.slider').height()-(margin.top+margin.bottom));
 
@@ -123,16 +123,19 @@ function makeSlider(){
 		;
 
 	var pull_rect = svg_slider.append("rect")
+		.attr("class", "pull")
 		.attr("width", width+margin.left+margin.right)
-		.attr("height", 15)
+		.attr("height", 20)
 		.style("fill", "#777")
-		.on("click", function(){console.log("WEEEEEE")});
+		.on("click", function(){toggleMap()});
 
 	var pull_text = svg_slider.append("text")
-		.text("PULL FOR INSIGHT")
+		.attr("class", "pull")
+		.text("CLICK FOR INSIGHT")
 		.style("text-anchor", "middle")
-		.attr("transform", "translate(" + (width+margin.left+margin.right)/2 + "," + 12 + ")")
-		.style("fill", "#fff");
+		.attr("transform", "translate(" + (width+margin.left+margin.right)/2 + "," + 15 + ")")
+		.style("fill", "#fff")
+		.on("click", function(){toggleMap()});;
 
 	var g_slider = svg_slider
 		.append("g")
@@ -239,7 +242,7 @@ function makeSlider(){
 			svg_slider.attr("width", width+margin.left+margin.right);
 
 			pull_rect.attr("width", width+margin.left+margin.right);
-			pull_text.attr("transform", "translate(" + (width+margin.left+margin.right)/2 + "," + 12 + ")");
+			pull_text.attr("transform", "translate(" + (width+margin.left+margin.right)/2 + "," + 15 + ")");
 
 			x.range([0, width]);
 
