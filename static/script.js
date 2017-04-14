@@ -150,6 +150,8 @@ function makeSlider(){
 
 		if (error) throw error;
 
+		console.log(data2);
+
 		type.domain(d3.keys(data2[0]).filter(function(key) { return key !== "date"; }));
 
 		data2.forEach(function(d) {
